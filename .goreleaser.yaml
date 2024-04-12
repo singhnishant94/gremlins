@@ -3,8 +3,8 @@ before:
   hooks:
     - make clean
     - go mod download
-gomod:
-  proxy: true
+# gomod:
+#   proxy: true
 builds:
   - main: ./cmd/gremlins
     env:
