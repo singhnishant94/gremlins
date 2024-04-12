@@ -61,7 +61,7 @@ extract the zip archive and copy the `.exe` file somewhere in your execution `PA
 You can also run Gremlins using the official Docker image:
 
 ```shell
-docker run --rm -v $(pwd):/app -w /app gogremlins/gremlins gremlins unleash .
+docker run --rm -v $(pwd):/app -w /app slicenishant/gremlins gremlins unleash .
 ```
 
 ### :material-bash: Manual install

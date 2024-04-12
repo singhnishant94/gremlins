@@ -25,7 +25,7 @@ release:
   draft: true
   prerelease: auto
 dockers:
-  - image_templates: ["docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-386"]
+  - image_templates: ["docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-386"]
     use: buildx
     goos: linux
     goarch: "386"
@@ -39,7 +39,7 @@ dockers:
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=Apache-2.0
-  - image_templates: ["docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-amd64"]
+  - image_templates: ["docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-amd64"]
     use: buildx
     goos: linux
     goarch: "amd64"
@@ -53,7 +53,7 @@ dockers:
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=Apache-2.0
-  - image_templates: ["docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-arm64"]
+  - image_templates: ["docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-arm64"]
     use: buildx
     goos: linux
     goarch: "arm64"
@@ -68,16 +68,16 @@ dockers:
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=Apache-2.0
 docker_manifests:
-  - name_template: docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}
+  - name_template: docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}
     image_templates:
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-amd64
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-arm64
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-386
-  - name_template: docker.io/gogremlins/{{ .ProjectName }}:latest
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-amd64
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-arm64
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-386
+  - name_template: docker.io/slicenishant/{{ .ProjectName }}:latest
     image_templates:
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-amd64
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-arm64
-      - docker.io/gogremlins/{{ .ProjectName }}:{{ .Version }}-386
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-amd64
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-arm64
+      - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-386
 nfpms:
   - homepage: https://gremlins.dev
     description: A mutation testing tool for Go.

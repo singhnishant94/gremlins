@@ -30,7 +30,7 @@ extra:
       link: https://github.com/slice-nishantk
       name: GitHub
     - icon: fontawesome/brands/docker
-      link: https://hub.docker.com/r/gogremlins/gremlins
+      link: https://hub.docker.com/r/slicenishant/gremlins
       name: Docker
   version:
     provider: mike
