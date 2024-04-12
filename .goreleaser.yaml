@@ -22,7 +22,7 @@ builds:
         goarch: "386"
 release:
   github:
-  draft: true
+  draft: false
   prerelease: auto
 dockers:
   - image_templates: ["docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-386"]
