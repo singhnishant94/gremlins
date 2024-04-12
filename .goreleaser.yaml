@@ -78,27 +78,27 @@ docker_manifests:
       - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-amd64
       - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-arm64
       - docker.io/slicenishant/{{ .ProjectName }}:{{ .Version }}-386
-nfpms:
-  - homepage: https://gremlins.dev
-    description: A mutation testing tool for Go.
-    license: Apache-2.0 License
-    maintainer: Davide Petilli <davide.petilli@gmail.com>
-    formats:
-      - deb
-      - rpm
-brews:
-  - repository:
-      owner: go-gremlins
-      name: homebrew-tap
-      branch: main
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    folder: Formula
-    homepage: https://gremlins.dev
-    description: A mutation testing tool for Go.
-    license: Apache-2.0 License
-    skip_upload: auto
-    test: |
-      system "#{bin}/gremlins --version"
+# nfpms:
+#   - homepage: https://gremlins.dev
+#     description: A mutation testing tool for Go.
+#     license: Apache-2.0 License
+#     maintainer: Davide Petilli <davide.petilli@gmail.com>
+#     formats:
+#       - deb
+#       - rpm
+# brews:
+#   - repository:
+#       owner: go-gremlins
+#       name: homebrew-tap
+#       branch: main
+#       token: "{{ .Env.GITHUB_TOKEN }}"
+#     folder: Formula
+#     homepage: https://gremlins.dev
+#     description: A mutation testing tool for Go.
+#     license: Apache-2.0 License
+#     skip_upload: auto
+#     test: |
+#       system "#{bin}/gremlins --version"
 checksum:
   name_template: 'checksums.txt'
 source:
