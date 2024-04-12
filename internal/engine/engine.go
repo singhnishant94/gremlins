@@ -296,8 +296,9 @@ func (mu *Engine) executeTests(ctx context.Context) report.Results {
 
 func getPRComment(m mutator.Mutator) string {
 	return fmt.Sprintf(
-		`Changing the code like shown below does not cause any tests exercising them to fail.
-		Consider adding tests that fail when the code is mutated.\n\n%s`, m.Diff())
+		"Changing the code like shown below does not cause any tests exercising them to fail.\n"+
+			"Consider adding tests that fail when the code is mutated.\n\n"+
+			"```diff\n%s\n```", m.Diff())
 }
 
 func checkDone(ctx context.Context) bool {
