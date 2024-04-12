@@ -152,6 +152,12 @@ type Mutator interface {
 	// Pos returns the token.Pos of the Mutator.
 	Pos() token.Pos
 
+	// Diff returns the diff between the original and the mutation.
+	Diff() string
+
+	// SetDiff sets the diff between the original and the mutation.
+	SetDiff(d string)
+
 	// Pkg returns the package where the Mutator is fount.
 	Pkg() string
 

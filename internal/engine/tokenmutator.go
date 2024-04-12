@@ -18,12 +18,15 @@ package engine
 
 import (
 	"bytes"
+	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
+	"syscall"
 
 	"github.com/go-gremlins/gremlins/internal/mutator"
 )
@@ -48,6 +51,7 @@ type TokenMutator struct {
 	status      mutator.Status
 	mutantType  mutator.Type
 	actualToken token.Token
+	diff        string
 }
 
 // NewTokenMutant initialises a TokenMutator.
@@ -90,6 +94,16 @@ func (m *TokenMutator) Pos() token.Pos {
 	return m.tokenNode.TokPos
 }
 
+// Diff returns the diff between the original and the mutation.
+func (m *TokenMutator) Diff() string {
+	return m.diff
+}
+
+// SetDiff sets the diff between the original and the mutation.
+func (m *TokenMutator) SetDiff(d string) {
+	m.diff = d
+}
+
 // Pkg returns the package name to which the mutant belongs.
 func (m *TokenMutator) Pkg() string {
 	return m.pkg
@@ -115,6 +129,12 @@ func (m *TokenMutator) Apply() error {
 		return err
 	}
 
+	// Create a copy of the original file to calculate the diff later.
+	copyOrigFileName := filepath.Join(m.workDir, m.Position().Filename+".copy.orig")
+	if err = m.writeMutatedFile(copyOrigFileName); err != nil {
+		return err
+	}
+
 	m.actualToken = m.tokenNode.Tok()
 	m.tokenNode.SetTok(tokenMutations[m.Type()][m.tokenNode.Tok()])
 
@@ -124,6 +144,11 @@ func (m *TokenMutator) Apply() error {
 
 	// Rollback here to facilitate the atomicity of the operation.
 	m.tokenNode.SetTok(m.actualToken)
+
+	m.SetDiff(m.calcDiff(copyOrigFileName, filename))
+
+	// Remove the copy of the original file.
+	os.Remove(copyOrigFileName)
 
 	return nil
 }
@@ -141,6 +166,25 @@ func (m *TokenMutator) writeMutatedFile(filename string) error {
 	}
 
 	return nil
+}
+
+func (m *TokenMutator) calcDiff(origFile, mutationFile string) string {
+	diff, err := exec.Command("diff", "--label=Original", "--label=New", "-u", origFile, mutationFile).CombinedOutput()
+	var execExitCode int
+	if err == nil {
+		execExitCode = 0
+	} else if e, ok := err.(*exec.ExitError); ok {
+		execExitCode = e.Sys().(syscall.WaitStatus).ExitStatus()
+	} else {
+		panic(err)
+	}
+	if execExitCode != 0 && execExitCode != 1 {
+		fmt.Printf("%s\n", diff)
+
+		panic("Could not execute diff on mutation file")
+	}
+
+	return string(diff)
 }
 
 var locks = make(map[string]*sync.Mutex)

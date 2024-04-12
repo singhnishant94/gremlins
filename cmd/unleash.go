@@ -49,6 +49,8 @@ const (
 	commandName = "unleash"
 
 	paramDiff               = "diff"
+	paramGithubToken        = "github-token"
+	paramGithubRepo         = "github-repo"
 	paramBuildTags          = "tags"
 	paramCoverPackages      = "coverpkg"
 	paramDryRun             = "dry-run"
@@ -211,6 +213,8 @@ func setFlagsOnCmd(cmd *cobra.Command) error {
 		{Name: paramBuildTags, CfgKey: configuration.UnleashTagsKey, Shorthand: "t", DefaultV: "", Usage: "a comma-separated list of build tags"},
 		{Name: paramCoverPackages, CfgKey: configuration.UnleashCoverPkgKey, DefaultV: "", Usage: "a comma-separated list of package patterns"},
 		{Name: paramDiff, CfgKey: configuration.UnleashDiffRef, Shorthand: "D", DefaultV: "", Usage: "diff branch or commit"},
+		{Name: paramGithubToken, CfgKey: configuration.UnleashGithubToken, Shorthand: "", DefaultV: "", Usage: "Github token"},
+		{Name: paramGithubRepo, CfgKey: configuration.UnleashGithubRepo, Shorthand: "", DefaultV: "", Usage: "Github repo"},
 		{Name: paramOutput, CfgKey: configuration.UnleashOutputKey, Shorthand: "o", DefaultV: "", Usage: "set the output file for machine readable results"},
 		{Name: paramIntegrationMode, CfgKey: configuration.UnleashIntegrationMode, Shorthand: "i", DefaultV: false, Usage: "makes Gremlins run the complete test suite for each mutation"},
 		{Name: paramExcludeFiles, CfgKey: configuration.UnleashExcludeFiles, Shorthand: "E", DefaultV: []string{}, Usage: "exclude files from Gremlins run by filepath regexp"},

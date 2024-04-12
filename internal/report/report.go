@@ -270,6 +270,7 @@ func Do(results Results) error {
 // the report generation.
 func Mutant(m mutator.Mutator) {
 	status := m.Status().String()
+	shouldLog := true
 	switch m.Status() {
 	case mutator.Killed, mutator.Runnable:
 		status = fgHiGreen(m.Status())
@@ -281,8 +282,14 @@ func Mutant(m mutator.Mutator) {
 		status = fgGreen(m.Status())
 	case mutator.NotViable, mutator.Skipped:
 		status = fgHiBlack(m.Status())
+		shouldLog = false
 	}
-	log.Infof("%s%s %s at %s\n", padding(m.Status()), status, m.Type(), m.Position())
+	if shouldLog {
+		log.Infof("%s%s %s at %s\n", padding(m.Status()), status, m.Type(), m.Position())
+		if m.Status() == mutator.Lived {
+			log.Infof("%s\n", m.Diff())
+		}
+	}
 }
 
 func padding(s mutator.Status) string {

@@ -18,11 +18,13 @@ package engine
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -58,6 +60,13 @@ type CodeData struct {
 	Cov       coverage.Profile
 	Diff      diff.Diff
 	Exclusion exclusion.Rules
+}
+
+type Comment struct {
+	Body string `json:"body"`
+	Path string `json:"path"`
+	Line int    `json:"line"`
+	Side string `json:"side"`
 }
 
 // Option for the Engine initialization.
@@ -225,12 +234,70 @@ func (mu *Engine) executeTests(ctx context.Context) report.Results {
 		close(outCh)
 	}()
 
+	surfacedMutants := map[string]map[int]bool{}
+	comments := []Comment{}
+
 	for m := range outCh {
 		mu.logger.Mutant(m)
 		mutants = append(mutants, m)
+
+		if m.Status() == mutator.Lived {
+			shouldComment := false
+
+			fileMutants, ok := surfacedMutants[m.Position().Filename]
+			if !ok {
+				fileMutants = map[int]bool{m.Position().Line: true}
+				surfacedMutants[m.Position().Filename] = fileMutants
+				shouldComment = true
+			} else {
+				_, ok := fileMutants[m.Position().Line]
+				if !ok {
+					fileMutants[m.Position().Line] = true
+					surfacedMutants[m.Position().Filename] = fileMutants
+					shouldComment = true
+				}
+			}
+
+			if shouldComment {
+				comment := Comment{
+					Body: getPRComment(m),
+					Path: m.Position().Filename,
+					Line: m.Position().Line,
+					Side: "RIGHT",
+				}
+				comments = append(comments, comment)
+			}
+		}
 	}
 
+	// Marshal the data into JSON
+	jsonData, err := json.MarshalIndent(comments, "", "    ")
+	if err != nil {
+		log.Fatalf("Error occurred during marshalling. %v", err)
+	}
+
+	// Writing the JSON data to a file
+	fileName := "comments.json"
+	file, err := os.Create(fileName)
+	if err != nil {
+		log.Fatalf("Error occurred creating file: %v", err)
+	}
+	defer file.Close()
+
+	// Write the JSON data to file
+	_, err = file.Write(jsonData)
+	if err != nil {
+		log.Fatalf("Error occurred writing to file: %v", err)
+	}
+	log.Printf("Data successfully written to %s", fileName)
+
 	return results(mutants)
+}
+
+func getPRComment(m mutator.Mutator) string {
+	return fmt.Sprintf(
+		`Changing the code like shown below does not cause any tests exercising them to fail.
+		Consider adding tests that fail when the code is mutated.\n\n%s`, m.Diff())
 }
 
 func checkDone(ctx context.Context) bool {

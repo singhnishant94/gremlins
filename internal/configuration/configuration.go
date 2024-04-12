@@ -44,6 +44,8 @@ const (
 	UnleashIntegrationMode       = "unleash.integration"
 	UnleashExcludeFiles          = "unleash.exclude-files"
 	UnleashDiffRef               = "unleash.diff"
+	UnleashGithubToken           = "unleash.github-token"
+	UnleashGithubRepo            = "unleash.github-repo"
 	UnleashThresholdEfficacyKey  = "unleash.threshold.efficacy"
 	UnleashThresholdMCoverageKey = "unleash.threshold.mutant-coverage"
 )
