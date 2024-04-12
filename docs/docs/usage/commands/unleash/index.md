@@ -268,14 +268,14 @@ gremlins unleash --output=output.json
 
 The output file in JSON format and has the following structure:
 
-[//]: # (@formatter:off)
+[//]: # "@formatter:off"
 
 ```json
 {
-  "go_module": "github.com/go-gremlins/gremlins",
-  "test_efficacy": 82.00,
+  "go_module": "github.com/slice-nishantk/gremlins",
+  "test_efficacy": 82.0,
   //(1)
-  "mutations_coverage": 80.00,
+  "mutations_coverage": 80.0,
   //(2)
   "mutants_total": 100,
   "mutants_killed": 82,
@@ -301,16 +301,17 @@ The output file in JSON format and has the following structure:
 }
 ```
 
-[//]: # (@formatter:on)
+[//]: # "@formatter:on"
 
 1. This is a percentage expressed as floating point number.
 2. This is a percentage expressed as floating point number.
 3. NOT VIABLE mutants are excluded from all the calculations.
 4. The elapsed time is expressed in seconds, expressed as floating point number.
 
-[//]: # (@formatter:off)
+[//]: # "@formatter:off"
+
 !!! warning
-    The JSON output file is not _pretty printed_; it is optimised for machine reading.
+The JSON output file is not _pretty printed_; it is optimised for machine reading.
 [//]: # (@formatter:on)
 
 ### Remove self-assignments
@@ -337,9 +338,10 @@ gremlins unleash --tags "tag1,tag2"
 
 :material-flag: `--test-cpu` · :material-sign-direction: Default: `0`
 
-[//]: # (@formatter:off)
+[//]: # "@formatter:off"
+
 !!! tip
-    To understand better the use of these flag, check [workers](workers.md)
+To understand better the use of these flag, check [workers](workers.md)
 [//]: # (@formatter:on)
 
 This flag overrides the number of CPUs the Go test tool will utilize. By default, Gremlins doesn't set this value.
@@ -380,9 +382,10 @@ gremlins unleash --threshold-mcover 80
 
 :material-flag: `--timeout-coefficient` · :material-sign-direction: Default: `0`
 
-[//]: # (@formatter:off)
+[//]: # "@formatter:off"
+
 !!! tip
-    To understand better the use of these flag, check [workers](workers.md)
+To understand better the use of these flag, check [workers](workers.md)
 [//]: # (@formatter:on)
 
 Gremlins determines the timeout for each Go test run by multiplying by a coefficient the time it took to perform the
@@ -397,9 +400,10 @@ gremlins unleash --timeout-coefficient=3
 
 :material-flag: `--workers` · :material-sign-direction: Default: `0`
 
-[//]: # (@formatter:off)
+[//]: # "@formatter:off"
+
 !!! tip
-    To understand better the use of these flag, check [workers](workers.md)
+To understand better the use of these flag, check [workers](workers.md)
 [//]: # (@formatter:on)
 
 Gremlins runs in parallel mode, which means that more than one test at a time will be performed, based on the number of

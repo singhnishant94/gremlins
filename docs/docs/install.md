@@ -12,7 +12,7 @@ and install it "manually".
 === ":material-debian: deb"
 
     Download a `.deb` file appropriate for your ARCH from
-    the [release page](https://github.com/go-gremlins/gremlins/releases/latest), then install with:
+    the [release page](https://github.com/slice-nishantk/gremlins/releases/latest), then install with:
 
     ```sh
     dpkg -i gremlins_{{ release.full_version }}_linux_amd64.deb
@@ -21,7 +21,7 @@ and install it "manually".
 === ":material-redhat: rpm"
 
     Download a `.rpm` file appropriate for your ARCH from
-    the [release page](https://github.com/go-gremlins/gremlins/releases/latest), then install with:
+    the [release page](https://github.com/slice-nishantk/gremlins/releases/latest), then install with:
 
     ```sh
     rpm -i gremlins_{{ release.full_version }}_linux_amd64.rpm
@@ -53,7 +53,7 @@ brew install gremlins
 
 As of now, only manual installation is supported.
 Download the appropriate release package from
-the [release page](https://github.com/go-gremlins/gremlins/releases/latest),
+the [release page](https://github.com/slice-nishantk/gremlins/releases/latest),
 extract the zip archive and copy the `.exe` file somewhere in your execution `PATH`.
 
 ### :material-docker: Docker
@@ -87,14 +87,14 @@ sudo cp gremlins_{{ release.full_version }}_linux_amd64/gremlins /usr/bin
 Gremlins can be installed with the Go install command. Only the [Go compiler](https://go.dev) is needed.
 
 ```sh
-go install github.com/go-gremlins/gremlins/cmd/gremlins@v{{ release.full_version }}
+go install github.com/slice-nishantk/gremlins/cmd/gremlins@v{{ release.full_version }}
 ```
 
 ### :material-ninja: Ninja style
 
 To build Gremlins you need the [Go compiler](https://go.dev), `make` and [golangci-lint](https://golangci-lint.run) for
 linting. You can clone download the source tarball from
-the [release page](https://github.com/go-gremlins/gremlins/releases/latest), then:
+the [release page](https://github.com/slice-nishantk/gremlins/releases/latest), then:
 
 ```sh
 tar -xvf gremlins-{{ release.full_version }}.tar.gz

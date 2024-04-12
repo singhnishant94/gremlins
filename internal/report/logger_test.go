@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/go-gremlins/gremlins/internal/configuration"
-	"github.com/go-gremlins/gremlins/internal/log"
-	"github.com/go-gremlins/gremlins/internal/mutator"
-	"github.com/go-gremlins/gremlins/internal/report"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/slice-nishantk/gremlins/internal/report"
 )
 
 func Test_parseFilter(t *testing.T) {

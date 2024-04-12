@@ -7,8 +7,8 @@ import (
 
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 
-	"github.com/go-gremlins/gremlins/internal/configuration"
-	"github.com/go-gremlins/gremlins/internal/log"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/log"
 )
 
 func New() (Diff, error) {

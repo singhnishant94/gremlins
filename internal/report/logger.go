@@ -3,9 +3,9 @@ package report
 import (
 	"errors"
 
-	"github.com/go-gremlins/gremlins/internal/configuration"
-	"github.com/go-gremlins/gremlins/internal/log"
-	"github.com/go-gremlins/gremlins/internal/mutator"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/slice-nishantk/gremlins/internal/mutator"
 )
 
 type Filter = map[mutator.Status]struct{}

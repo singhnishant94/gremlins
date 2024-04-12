@@ -34,7 +34,7 @@ dockers:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description="A mutation testing tool for Go"
       - --label=org.opencontainers.image.url=https://gremlins.dev
-      - --label=org.opencontainers.image.source=https://github.com/go-gremlins/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/slice-nishantk/{{ .ProjectName }}
       - --label=org.opencontainers.image.version={{ .Version }}
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
@@ -47,7 +47,7 @@ dockers:
       - --platform=linux/amd64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description="A mutation testing tool for Go"
-      - --label=org.opencontainers.image.url=https://github.com/go-gremlins/{{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/slice-nishantk/{{ .ProjectName }}
       - --label=org.opencontainers.image.url=https://gremlins.dev
       - --label=org.opencontainers.image.version={{ .Version }}
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
@@ -62,7 +62,7 @@ dockers:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description="A mutation testing tool for Go"
       - --label=org.opencontainers.image.url=https://gremlins.dev
-      - --label=org.opencontainers.image.source=https://github.com/go-gremlins/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/slice-nishantk/{{ .ProjectName }}
       - --label=org.opencontainers.image.version={{ .Version }}
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}

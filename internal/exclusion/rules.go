@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/go-gremlins/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
 )
 
 type Rules []*regexp.Regexp

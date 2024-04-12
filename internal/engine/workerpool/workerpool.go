@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/go-gremlins/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
 )
 
 // Executor is the unit of work that executes a task.

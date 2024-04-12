@@ -28,7 +28,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/go-gremlins/gremlins/internal/mutator"
+	"github.com/slice-nishantk/gremlins/internal/mutator"
 )
 
 // TokenMutator is a mutator.Mutator of a token.Token.

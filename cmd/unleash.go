@@ -27,18 +27,18 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/go-gremlins/gremlins/internal/coverage"
-	"github.com/go-gremlins/gremlins/internal/diff"
-	"github.com/go-gremlins/gremlins/internal/engine"
-	"github.com/go-gremlins/gremlins/internal/engine/workdir"
-	"github.com/go-gremlins/gremlins/internal/exclusion"
-	"github.com/go-gremlins/gremlins/internal/log"
-	"github.com/go-gremlins/gremlins/internal/mutator"
-	"github.com/go-gremlins/gremlins/internal/report"
+	"github.com/slice-nishantk/gremlins/internal/coverage"
+	"github.com/slice-nishantk/gremlins/internal/diff"
+	"github.com/slice-nishantk/gremlins/internal/engine"
+	"github.com/slice-nishantk/gremlins/internal/engine/workdir"
+	"github.com/slice-nishantk/gremlins/internal/exclusion"
+	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/slice-nishantk/gremlins/internal/report"
 
-	"github.com/go-gremlins/gremlins/cmd/internal/flags"
-	"github.com/go-gremlins/gremlins/internal/configuration"
-	"github.com/go-gremlins/gremlins/internal/gomodule"
+	"github.com/slice-nishantk/gremlins/cmd/internal/flags"
+	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/slice-nishantk/gremlins/internal/gomodule"
 )
 
 type unleashCmd struct {
