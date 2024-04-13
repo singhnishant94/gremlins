@@ -26,6 +26,7 @@ import (
 type NodeToken struct {
 	tok    *token.Token
 	TokPos token.Pos
+	node   *ast.Node
 }
 
 // NewTokenNode checks if the ast.Node implementation is supported by
@@ -35,6 +36,7 @@ type NodeToken struct {
 func NewTokenNode(n ast.Node) (*NodeToken, bool) {
 	var tok *token.Token
 	var pos token.Pos
+	node := &n
 	switch n := n.(type) {
 	case *ast.AssignStmt:
 		tok = &n.Tok
@@ -58,6 +60,7 @@ func NewTokenNode(n ast.Node) (*NodeToken, bool) {
 	return &NodeToken{
 		tok:    tok,
 		TokPos: pos,
+		node:   node,
 	}, true
 }
 

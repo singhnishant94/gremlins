@@ -135,15 +135,87 @@ func (m *TokenMutator) Apply() error {
 		return err
 	}
 
-	m.actualToken = m.tokenNode.Tok()
-	m.tokenNode.SetTok(tokenMutations[m.Type()][m.tokenNode.Tok()])
+	var oldX ast.Expr
+	var oldY ast.Expr
+
+	switch m.Type() {
+	case mutator.RemoveBinaryExpressionLeft:
+		n, ok := (*m.tokenNode.node).(*ast.BinaryExpr)
+		if !ok {
+			return nil
+		}
+		if n.Op != token.LAND && n.Op != token.LOR {
+			return nil
+		}
+
+		var r *ast.Ident
+
+		switch n.Op {
+		case token.LAND:
+			r = ast.NewIdent("true")
+		case token.LOR:
+			r = ast.NewIdent("false")
+		}
+
+		oldX = n.X
+
+		n.X = r
+	case mutator.RemoveBinaryExpressionRight:
+		n, ok := (*m.tokenNode.node).(*ast.BinaryExpr)
+		if !ok {
+			return nil
+		}
+		if n.Op != token.LAND && n.Op != token.LOR {
+			return nil
+		}
+
+		var r *ast.Ident
+
+		switch n.Op {
+		case token.LAND:
+			r = ast.NewIdent("true")
+		case token.LOR:
+			r = ast.NewIdent("false")
+		}
+
+		oldY = n.Y
+
+		n.Y = r
+	default:
+		m.actualToken = m.tokenNode.Tok()
+		m.tokenNode.SetTok(tokenMutations[m.Type()][m.tokenNode.Tok()])
+	}
 
 	if err = m.writeMutatedFile(filename); err != nil {
 		return err
 	}
 
 	// Rollback here to facilitate the atomicity of the operation.
-	m.tokenNode.SetTok(m.actualToken)
+	switch m.Type() {
+	case mutator.RemoveBinaryExpressionLeft:
+		n, ok := (*m.tokenNode.node).(*ast.BinaryExpr)
+		if !ok {
+			return nil
+		}
+		if n.Op != token.LAND && n.Op != token.LOR {
+			return nil
+		}
+
+		n.X = oldX
+
+	case mutator.RemoveBinaryExpressionRight:
+		n, ok := (*m.tokenNode.node).(*ast.BinaryExpr)
+		if !ok {
+			return nil
+		}
+		if n.Op != token.LAND && n.Op != token.LOR {
+			return nil
+		}
+
+		n.Y = oldY
+	default:
+		m.tokenNode.SetTok(m.actualToken)
+	}
 
 	m.SetDiff(m.calcDiff(copyOrigFileName, filename))
 

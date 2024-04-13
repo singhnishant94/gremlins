@@ -224,6 +224,34 @@
               "default": false
             }
           }
+        },
+        "remove-binary-expression-left": {
+          "title": "The remove-binary-expression-left Schema",
+          "type": "object",
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "title": "The enabled Schema",
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "remove-binary-expression-right": {
+          "title": "The remove-binary-expression-right Schema",
+          "type": "object",
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "title": "The enabled Schema",
+              "type": "boolean",
+              "default": false
+            }
+          }
         }
       }
     }
