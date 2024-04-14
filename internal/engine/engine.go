@@ -51,6 +51,7 @@ type Engine struct {
 	jDealer      ExecutorDealer
 	codeData     CodeData
 	mutantStream chan mutator.Mutator
+	mutants      []mutator.Mutator
 	module       gomodule.GoModule
 	logger       report.MutantLogger
 }
@@ -106,21 +107,31 @@ func WithDirFs(dirFS fs.FS) Option {
 // It walks the fs.FS provided and checks every .go file which is not a test.
 // For each file it will scan for tokenMutations and gather all the mutants found.
 func (mu *Engine) Run(ctx context.Context) report.Results {
-	mu.mutantStream = make(chan mutator.Mutator)
-	go func() {
-		defer close(mu.mutantStream)
-		_ = fs.WalkDir(mu.fs, ".", func(path string, _ fs.DirEntry, _ error) error {
-			isGoCode := filepath.Ext(path) == ".go" && !strings.HasSuffix(path, "_test.go")
-
-			if isGoCode && !mu.codeData.Exclusion.IsFileExcluded(path) {
-				mu.runOnFile(path)
-			}
-
-			return nil
-		})
-	}()
-
+	// mu.mutantStream = make(chan mutator.Mutator)
+	// go func() {
+	// defer close(mu.mutantStream)
 	start := time.Now()
+	_ = fs.WalkDir(mu.fs, ".", func(path string, _ fs.DirEntry, _ error) error {
+		isGoCode := filepath.Ext(path) == ".go" && !strings.HasSuffix(path, "_test.go")
+
+		if isGoCode && !mu.codeData.Exclusion.IsFileExcluded(path) {
+			mu.runOnFile(path)
+		}
+
+		return nil
+	})
+	// }()
+	runnable := 0
+	for _, m := range mu.mutants {
+		if m.Status() == mutator.Runnable {
+			runnable++
+		}
+	}
+
+	fmt.Printf("Found %d mutations in %f seconds out of which %d is runnable\n",
+		len(mu.mutants), time.Since(start).Seconds(), runnable)
+
+	start = time.Now()
 	res := mu.executeTests(ctx)
 	res.Elapsed = time.Since(start)
 	res.Module = mu.module.Name
@@ -161,7 +172,8 @@ func (mu *Engine) findMutations(fileName string, set *token.FileSet, file *ast.F
 		tm.SetType(mutantType)
 		tm.SetStatus(mu.mutationStatus(set.Position(node.TokPos)))
 
-		mu.mutantStream <- tm
+		mu.mutants = append(mu.mutants, tm)
+		// mu.mutantStream <- tm
 	}
 }
 
@@ -217,7 +229,7 @@ func (mu *Engine) executeTests(ctx context.Context) report.Results {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for mut := range mu.mutantStream {
+		for _, mut := range mu.mutants {
 			ok := checkDone(ctx)
 			if !ok {
 				pool.Stop()
