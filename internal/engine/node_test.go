@@ -21,7 +21,7 @@ import (
 	"go/token"
 	"testing"
 
-	"github.com/slice-nishantk/gremlins/internal/engine"
+	"github.com/singhnishant94/gremlins/internal/engine"
 )
 
 func TestNewTokenNode(t *testing.T) {

@@ -26,12 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
-	"github.com/slice-nishantk/gremlins/internal/engine/workdir"
-	"github.com/slice-nishantk/gremlins/internal/engine/workerpool"
-	"github.com/slice-nishantk/gremlins/internal/gomodule"
-	"github.com/slice-nishantk/gremlins/internal/log"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/engine/workdir"
+	"github.com/singhnishant94/gremlins/internal/engine/workerpool"
+	"github.com/singhnishant94/gremlins/internal/gomodule"
+	"github.com/singhnishant94/gremlins/internal/log"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 // DefaultTimeoutCoefficient is the default multiplier for the timeout length

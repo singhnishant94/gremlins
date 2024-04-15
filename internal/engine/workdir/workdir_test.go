@@ -29,7 +29,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/hectane/go-acl"
 
-	"github.com/slice-nishantk/gremlins/internal/engine/workdir"
+	"github.com/singhnishant94/gremlins/internal/engine/workdir"
 )
 
 func TestCopyFolder(t *testing.T) {

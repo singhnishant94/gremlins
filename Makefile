@@ -41,7 +41,7 @@ lint:
 
 .PHONY: goimports
 goimports:
-	goimports --local 'github.com/slice-nishantk/gremlins' -v -w .
+	goimports --local 'github.com/singhnishant94/gremlins' -v -w .
 
 .PHONY: fieldalignment
 fieldalignment:

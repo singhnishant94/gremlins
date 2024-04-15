@@ -27,9 +27,9 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/slice-nishantk/gremlins/cmd"
-	"github.com/slice-nishantk/gremlins/internal/execution"
-	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/singhnishant94/gremlins/cmd"
+	"github.com/singhnishant94/gremlins/internal/execution"
+	"github.com/singhnishant94/gremlins/internal/log"
 )
 
 var version = "dev"

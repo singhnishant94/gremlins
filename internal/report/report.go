@@ -24,12 +24,12 @@ import (
 	"github.com/fatih/color"
 	"github.com/hako/durafmt"
 
-	"github.com/slice-nishantk/gremlins/internal/log"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
-	"github.com/slice-nishantk/gremlins/internal/report/internal"
+	"github.com/singhnishant94/gremlins/internal/log"
+	"github.com/singhnishant94/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/report/internal"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
-	"github.com/slice-nishantk/gremlins/internal/execution"
+	"github.com/singhnishant94/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/execution"
 )
 
 var (

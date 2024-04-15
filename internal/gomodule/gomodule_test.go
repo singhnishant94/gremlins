@@ -21,7 +21,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/slice-nishantk/gremlins/internal/gomodule"
+	"github.com/singhnishant94/gremlins/internal/gomodule"
 )
 
 func TestDetectsModule(t *testing.T) {

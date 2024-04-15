@@ -4,9 +4,9 @@
   <p align="center" style="text-align: center">A mutation testing tool for Go</p>
 </p>
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/go-gremlins/gremlins/ci.yml?logo=github)](https://github.com/slice-nishantk/gremlins/actions/workflows/ci.yml)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/go-gremlins/gremlins/gremlins.yml?label=gremlins&logo=github)](https://github.com/slice-nishantk/gremlins/actions/workflows/gremlins.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/slice-nishantk/gremlins)](https://goreportcard.com/report/github.com/slice-nishantk/gremlins)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/go-gremlins/gremlins/ci.yml?logo=github)](https://github.com/singhnishant94/gremlins/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/go-gremlins/gremlins/gremlins.yml?label=gremlins&logo=github)](https://github.com/singhnishant94/gremlins/actions/workflows/gremlins.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/singhnishant94/gremlins)](https://goreportcard.com/report/github.com/singhnishant94/gremlins)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/go-gremlins/gremlins?logo=codeclimate)](https://codeclimate.com/github/go-gremlins/gremlins/maintainability)
 [![DeepSource](https://deepsource.io/gh/go-gremlins/gremlins.svg/?label=active+issues&token=posNnh5FHpZG9DhM23YH7h6d)](https://deepsource.io/gh/go-gremlins/gremlins/?ref=repository-badge)
 [![Codacy grade](https://img.shields.io/codacy/grade/744b4ac720c34518b7578204cfc61997?logo=codacy)](https://www.codacy.com/gh/go-gremlins/gremlins/dashboard?utm_source=github.com&utm_medium=referral&utm_content=go-gremlins/gremlins&utm_campaign=Badge_Grade)
@@ -49,7 +49,7 @@ Please refer to the [documentation](https://gremlins.dev) for instructions on ho
 This is just to get you started, do not forget to check the complete [documentation](https://gremlins.dev).
 
 Download the pre-built binary for your OS/ARCH from
-the [release page](https://github.com/slice-nishantk/gremlins/releases/latest)
+the [release page](https://github.com/singhnishant94/gremlins/releases/latest)
 and put it somewhere in the `PATH`, then:
 
 ```shell

@@ -19,7 +19,7 @@ package engine
 import (
 	"go/token"
 
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 // TokenMutantType is the mapping from each token.Token and all the

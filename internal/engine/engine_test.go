@@ -24,12 +24,12 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
-	"github.com/slice-nishantk/gremlins/internal/coverage"
-	"github.com/slice-nishantk/gremlins/internal/diff"
-	"github.com/slice-nishantk/gremlins/internal/engine"
-	"github.com/slice-nishantk/gremlins/internal/gomodule"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/coverage"
+	"github.com/singhnishant94/gremlins/internal/diff"
+	"github.com/singhnishant94/gremlins/internal/engine"
+	"github.com/singhnishant94/gremlins/internal/gomodule"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 const (

@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/singhnishant94/gremlins/internal/log"
 )
 
 // Dealer is the responsible for creating and returning the reference

@@ -17,7 +17,7 @@
 package configuration
 
 import (
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 var mutationEnabled = map[mutator.Type]bool{

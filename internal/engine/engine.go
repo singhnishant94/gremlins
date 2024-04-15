@@ -31,15 +31,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/slice-nishantk/gremlins/internal/coverage"
-	"github.com/slice-nishantk/gremlins/internal/diff"
-	"github.com/slice-nishantk/gremlins/internal/engine/workerpool"
-	"github.com/slice-nishantk/gremlins/internal/exclusion"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
-	"github.com/slice-nishantk/gremlins/internal/report"
+	"github.com/singhnishant94/gremlins/internal/coverage"
+	"github.com/singhnishant94/gremlins/internal/diff"
+	"github.com/singhnishant94/gremlins/internal/engine/workerpool"
+	"github.com/singhnishant94/gremlins/internal/exclusion"
+	"github.com/singhnishant94/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/report"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
-	"github.com/slice-nishantk/gremlins/internal/gomodule"
+	"github.com/singhnishant94/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/gomodule"
 )
 
 // Engine is the "engine" that performs the mutation testing.

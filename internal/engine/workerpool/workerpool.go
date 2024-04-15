@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/configuration"
 )
 
 // Executor is the unit of work that executes a task.

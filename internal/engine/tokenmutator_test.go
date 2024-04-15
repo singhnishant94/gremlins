@@ -26,8 +26,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/slice-nishantk/gremlins/internal/engine"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/engine"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 func TestMutantApplyAndRollback(t *testing.T) {

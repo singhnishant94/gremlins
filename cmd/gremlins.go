@@ -24,10 +24,10 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 
-	"github.com/slice-nishantk/gremlins/cmd/internal/flags"
-	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/cmd/internal/flags"
+	"github.com/singhnishant94/gremlins/internal/configuration"
 
-	"github.com/slice-nishantk/gremlins/internal/log"
+	"github.com/singhnishant94/gremlins/internal/log"
 )
 
 const paramConfigFile = "config"

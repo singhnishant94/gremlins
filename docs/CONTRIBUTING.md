@@ -38,7 +38,7 @@ your work, opening a _pull request_.
 
 All contributions are welcome, but, before submitting any significant change, it is better to coordinate with the
 Gremlins' team before starting the work. It is a good idea to start at
-the [issue tracker](https://github.com/slice-nishantk/gremlins/issues) and file a new issue or claim an existing one.
+the [issue tracker](https://github.com/singhnishant94/gremlins/issues) and file a new issue or claim an existing one.
 
 ### Open an issue
 

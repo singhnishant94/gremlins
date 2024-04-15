@@ -1,4 +1,4 @@
-module github.com/slice-nishantk/gremlins
+module github.com/singhnishant94/gremlins
 
 go 1.21
 

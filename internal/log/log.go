@@ -23,7 +23,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/configuration"
 )
 
 var fgRed = color.New(color.FgRed).SprintFunc()

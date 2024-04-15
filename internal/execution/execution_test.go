@@ -19,7 +19,7 @@ package execution_test
 import (
 	"testing"
 
-	"github.com/slice-nishantk/gremlins/internal/execution"
+	"github.com/singhnishant94/gremlins/internal/execution"
 )
 
 func TestExitErr(t *testing.T) {

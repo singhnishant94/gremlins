@@ -3,7 +3,7 @@ package exclusion
 import (
 	"testing"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/configuration"
 )
 
 var testPath = []string{

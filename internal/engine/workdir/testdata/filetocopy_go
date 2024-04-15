@@ -24,11 +24,11 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/slice-nishantk/gremlins/configuration"
-	"github.com/slice-nishantk/gremlins/internal/gomodule"
-	"github.com/slice-nishantk/gremlins/pkg/coverage"
-	"github.com/slice-nishantk/gremlins/pkg/mutant"
-	"github.com/slice-nishantk/gremlins/pkg/mutator"
+	"github.com/singhnishant94/gremlins/configuration"
+	"github.com/singhnishant94/gremlins/internal/gomodule"
+	"github.com/singhnishant94/gremlins/pkg/coverage"
+	"github.com/singhnishant94/gremlins/pkg/mutant"
+	"github.com/singhnishant94/gremlins/pkg/mutator"
 )
 
 const (

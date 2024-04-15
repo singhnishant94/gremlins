@@ -19,8 +19,8 @@ package configuration_test
 import (
 	"testing"
 
-	"github.com/slice-nishantk/gremlins/internal/configuration"
-	"github.com/slice-nishantk/gremlins/internal/mutator"
+	"github.com/singhnishant94/gremlins/internal/configuration"
+	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
 func TestMutantDefaultStatus(t *testing.T) {

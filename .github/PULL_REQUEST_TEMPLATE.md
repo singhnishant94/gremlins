@@ -25,7 +25,7 @@ them, don't hesitate to ask. We're here to help! This is simply a reminder of wh
 merging your code.
 -->
 
-- [ ] I have read the [CONTRIBUTING](https://github.com/slice-nishantk/gremlins/docs/CONTRIBUTING.md) doc
+- [ ] I have read the [CONTRIBUTING](https://github.com/singhnishant94/gremlins/docs/CONTRIBUTING.md) doc
 - [ ] Lint and unit tests pass locally with my changes (`make all`)
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have added necessary documentation (if appropriate)

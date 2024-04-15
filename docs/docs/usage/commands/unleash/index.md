@@ -272,7 +272,7 @@ The output file in JSON format and has the following structure:
 
 ```json
 {
-  "go_module": "github.com/slice-nishantk/gremlins",
+  "go_module": "github.com/singhnishant94/gremlins",
   "test_efficacy": 82.0,
   //(1)
   "mutations_coverage": 80.0,
