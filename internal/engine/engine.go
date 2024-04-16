@@ -42,6 +42,13 @@ import (
 	"github.com/singhnishant94/gremlins/internal/gomodule"
 )
 
+var loggerIdentifiers = map[string]bool{
+	"log":     true,
+	"fmt":     true,
+	"slogger": true,
+	"logger":  true,
+}
+
 // Engine is the "engine" that performs the mutation testing.
 //
 // It traverses the AST of the project, finds which TokenMutator can be applied and
@@ -144,7 +151,6 @@ func (mu *Engine) runOnFile(fileName string) {
 	src, _ := mu.fs.Open(fileName)
 	set := token.NewFileSet()
 	file, err := parser.ParseFile(set, fileName, src, parser.ParseComments)
-	fmt.Printf("Parsing %s\n", fileName)
 	// file, _, , err := mu.parseAndTypeCheckFile(fileName)
 	if err != nil {
 		_ = src.Close()
@@ -262,14 +268,39 @@ func (mu *Engine) findNodeMutations(fileName string, set *token.FileSet, file *a
 func checkRemoveStatement(node ast.Stmt) bool {
 	switch n := node.(type) {
 	case *ast.AssignStmt:
-		if n.Tok != token.DEFINE {
-			return true
-		}
-	case *ast.ExprStmt, *ast.IncDecStmt:
+		return n.Tok != token.DEFINE
+	case *ast.IncDecStmt:
 		return true
+	case *ast.ExprStmt:
+		return !isLoggerStmt(n)
 	}
 
 	return false
+}
+
+func isLoggerStmt(es ast.Node) bool {
+	firstIdent := ""
+	ast.Inspect(es, func(n ast.Node) bool {
+		if ident, ok := n.(*ast.Ident); ok {
+			// Since it's a depth first traversal, first identifier should be
+			// one of loggerIdentifiers for the statement to be a logger stmt.
+			if firstIdent != "" {
+				// If we've already found our candidate don't recurse further
+				return false
+			}
+			firstIdent = ident.Name
+			return false
+		}
+
+		if firstIdent != "" {
+			return false
+		}
+		return true
+	})
+
+	_, found := loggerIdentifiers[firstIdent]
+
+	return found
 }
 
 func (mu *Engine) executeTests(ctx context.Context) report.Results {
