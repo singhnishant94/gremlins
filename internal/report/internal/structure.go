@@ -60,4 +60,5 @@ type MutatorType struct {
 	RemoveSelfAssignments       int `json:"remove_self_assignments,omitempty"`
 	RemoveBinaryExpressionLeft  int `json:"remove_binary_expression_left,omitempty"`
 	RemoveBinaryExpressionRight int `json:"remove_binary_expression_right,omitempty"`
+	RemoveStatement             int `json:"remove_statement"`
 }

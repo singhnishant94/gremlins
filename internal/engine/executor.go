@@ -175,7 +175,7 @@ func (m *mutantExecutor) Start(w *workerpool.Worker) {
 	}
 
 	if err := m.mutant.Apply(); err != nil {
-		log.Errorf("failed to apply mutation at %s - %s\n\t%v", m.mutant.Position(), m.mutant.Status(), err)
+		log.Errorf("failed to apply mutation at %s - %s\n\t%v\n", m.mutant.Position(), m.mutant.Status(), err)
 
 		return
 	}
@@ -204,6 +204,8 @@ func (m *mutantExecutor) runTests(rootDir, pkg string) mutator.Status {
 
 	rel, err := run(cmd)
 	defer rel()
+
+	m.mutant.SetTestExecutionError(err)
 
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		return mutator.TimedOut

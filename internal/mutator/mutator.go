@@ -85,6 +85,7 @@ const (
 	RemoveSelfAssignments
 	RemoveBinaryExpressionLeft
 	RemoveBinaryExpressionRight
+	RemoveStatement
 )
 
 // Types allows to iterate over Type.
@@ -102,6 +103,7 @@ var Types = []Type{
 	RemoveSelfAssignments,
 	RemoveBinaryExpressionLeft,
 	RemoveBinaryExpressionRight,
+	RemoveStatement,
 }
 
 func (mt Type) String() string {
@@ -132,6 +134,8 @@ func (mt Type) String() string {
 		return "REMOVE_BINARY_EXPRESSION_LEFT"
 	case RemoveBinaryExpressionRight:
 		return "REMOVE_BINARY_EXPRESSION_RIGHT"
+	case RemoveStatement:
+		return "REMOVE_STATEMENT"
 
 	default:
 		panic("this should not happen")
@@ -182,4 +186,10 @@ type Mutator interface {
 	// Rollback removes the mutation from the source code and sets it back to
 	// its original status.
 	Rollback() error
+
+	// Set test execution error
+	SetTestExecutionError(error)
+
+	// Test execution error
+	TestExecutionError() error
 }

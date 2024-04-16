@@ -111,6 +111,7 @@ func (mu *Engine) Run(ctx context.Context) report.Results {
 	// go func() {
 	// defer close(mu.mutantStream)
 	start := time.Now()
+	fmt.Printf("Start parsing files\n")
 	_ = fs.WalkDir(mu.fs, ".", func(path string, _ fs.DirEntry, _ error) error {
 		isGoCode := filepath.Ext(path) == ".go" && !strings.HasSuffix(path, "_test.go")
 
@@ -142,7 +143,14 @@ func (mu *Engine) Run(ctx context.Context) report.Results {
 func (mu *Engine) runOnFile(fileName string) {
 	src, _ := mu.fs.Open(fileName)
 	set := token.NewFileSet()
-	file, _ := parser.ParseFile(set, fileName, src, parser.ParseComments)
+	file, err := parser.ParseFile(set, fileName, src, parser.ParseComments)
+	fmt.Printf("Parsing %s\n", fileName)
+	// file, _, , err := mu.parseAndTypeCheckFile(fileName)
+	if err != nil {
+		_ = src.Close()
+		fmt.Printf("Error parsing file %s\n err: %s", fileName, err)
+		return
+	}
 	_ = src.Close()
 
 	ast.Inspect(file, func(node ast.Node) bool {
@@ -150,13 +158,23 @@ func (mu *Engine) runOnFile(fileName string) {
 		if !ok {
 			return true
 		}
-		mu.findMutations(fileName, set, file, n)
+		mu.findTokenMutations(fileName, set, file, n)
+
+		return true
+	})
+
+	ast.Inspect(file, func(node ast.Node) bool {
+		n, ok := NewNode(node)
+		if !ok {
+			return true
+		}
+		mu.findNodeMutations(fileName, set, file, n)
 
 		return true
 	})
 }
 
-func (mu *Engine) findMutations(fileName string, set *token.FileSet, file *ast.File, node *NodeToken) {
+func (mu *Engine) findTokenMutations(fileName string, set *token.FileSet, file *ast.File, node *NodeToken) {
 	mutantTypes, ok := TokenMutantType[node.Tok()]
 	if !ok {
 		return
@@ -217,6 +235,41 @@ func (mu *Engine) mutationStatus(pos token.Position) mutator.Status {
 	}
 
 	return status
+}
+
+func (mu *Engine) findNodeMutations(fileName string, set *token.FileSet, file *ast.File, node *Node) {
+	// Statement block removal
+	var l []ast.Stmt
+
+	switch n := (*node.node).(type) {
+	case *ast.BlockStmt:
+		l = n.List
+	case *ast.CaseClause:
+		l = n.Body
+	}
+
+	for i, ni := range l {
+		if checkRemoveStatement(ni) {
+			tm := NewStmtRemover(mu.pkgName(fileName, file.Name.Name), set, file, node, i, ni.Pos())
+			tm.SetType(mutator.RemoveStatement)
+			tm.SetStatus(mu.mutationStatus(set.Position(tm.Pos())))
+
+			mu.mutants = append(mu.mutants, tm)
+		}
+	}
+}
+
+func checkRemoveStatement(node ast.Stmt) bool {
+	switch n := node.(type) {
+	case *ast.AssignStmt:
+		if n.Tok != token.DEFINE {
+			return true
+		}
+	case *ast.ExprStmt, *ast.IncDecStmt:
+		return true
+	}
+
+	return false
 }
 
 func (mu *Engine) executeTests(ctx context.Context) report.Results {
@@ -308,7 +361,7 @@ func (mu *Engine) executeTests(ctx context.Context) report.Results {
 
 func getPRComment(m mutator.Mutator) string {
 	return fmt.Sprintf(
-		"Changing the code like shown below does not cause any tests exercising them to fail.\n"+
+		"[gremlins] Changing the code like shown below does not cause any tests exercising them to fail.\n"+
 			"Consider adding tests that fail when the code is mutated.\n\n"+
 			"```diff\n%s\n```", m.Diff())
 }

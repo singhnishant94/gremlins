@@ -14,9 +14,7 @@ BIN=${TARGET}/bin
 all: lint test build
 snap: lint test snapshot
 
-build: ${BIN}/${BINARY_NAME}
-
-${BIN}/${BINARY_NAME}:
+build:
 	mkdir -p ${BIN}
 	${GO_BUILD} -o ${BIN}/${BINARY_NAME} cmd/gremlins/main.go
 

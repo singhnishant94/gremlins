@@ -52,6 +52,7 @@ type TokenMutator struct {
 	mutantType  mutator.Type
 	actualToken token.Token
 	diff        string
+	testExecErr error
 }
 
 // NewTokenMutant initialises a TokenMutator.
@@ -296,6 +297,14 @@ func (m *TokenMutator) Rollback() error {
 	filename := filepath.Join(m.workDir, m.Position().Filename)
 
 	return os.WriteFile(filename, m.origFile, 0600)
+}
+
+func (m *TokenMutator) SetTestExecutionError(err error) {
+	m.testExecErr = err
+}
+
+func (m *TokenMutator) TestExecutionError() error {
+	return m.testExecErr
 }
 
 // SetWorkdir sets the base path on which to Apply and Rollback operations.

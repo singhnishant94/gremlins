@@ -29,6 +29,11 @@ type NodeToken struct {
 	node   *ast.Node
 }
 
+type Node struct {
+	node *ast.Node
+	pos  token.Pos
+}
+
 // NewTokenNode checks if the ast.Node implementation is supported by
 // Gremlins and gets its Tok/Op and relative position.
 // It returns false as second parameter if the implementation is not
@@ -72,4 +77,21 @@ func (n *NodeToken) Tok() token.Token {
 // SetTok sets the token.Token of the tokenNode.
 func (n *NodeToken) SetTok(t token.Token) {
 	*n.tok = t
+}
+
+func NewNode(nd ast.Node) (*Node, bool) {
+	var pos token.Pos
+	var node *ast.Node
+	switch n := nd.(type) {
+	case *ast.BlockStmt, *ast.CaseClause:
+		node = &nd
+		pos = n.Pos()
+	default:
+		return &Node{}, false
+	}
+
+	return &Node{
+		node: node,
+		pos:  pos,
+	}, true
 }
