@@ -178,6 +178,8 @@ func run(ctx context.Context, mod gomodule.GoModule, workDir string) (report.Res
 		return report.Results{}, fmt.Errorf("failed to gather coverage: %w", err)
 	}
 
+	fmt.Printf("coverage profile: %+v\n", cProfile)
+
 	wdDealer := workdir.NewCachedDealer(workDir, mod.Root)
 	defer wdDealer.Clean()
 
