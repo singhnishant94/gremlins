@@ -42,6 +42,8 @@ import (
 	"github.com/singhnishant94/gremlins/internal/gomodule"
 )
 
+const detectAridNodes = true
+
 var loggerIdentifiers = map[string]bool{
 	"log":     true,
 	"fmt":     true,
@@ -54,13 +56,12 @@ var loggerIdentifiers = map[string]bool{
 // It traverses the AST of the project, finds which TokenMutator can be applied and
 // performs the actual mutation testing.
 type Engine struct {
-	fs           fs.FS
-	jDealer      ExecutorDealer
-	codeData     CodeData
-	mutantStream chan mutator.Mutator
-	mutants      []mutator.Mutator
-	module       gomodule.GoModule
-	logger       report.MutantLogger
+	fs       fs.FS
+	jDealer  ExecutorDealer
+	codeData CodeData
+	mutants  []mutator.Mutator
+	module   gomodule.GoModule
+	logger   report.MutantLogger
 }
 
 // CodeData is used to check if the mutant should be executed.
@@ -164,6 +165,9 @@ func (mu *Engine) runOnFile(fileName string) {
 		if !ok {
 			return true
 		}
+		if detectAridNodes && isAridNode(node) {
+			return false
+		}
 		mu.findTokenMutations(fileName, set, file, n)
 
 		return true
@@ -173,6 +177,9 @@ func (mu *Engine) runOnFile(fileName string) {
 		n, ok := NewNode(node)
 		if !ok {
 			return true
+		}
+		if detectAridNodes && isAridNode(node) {
+			return false
 		}
 		mu.findNodeMutations(fileName, set, file, n)
 
@@ -266,13 +273,66 @@ func (mu *Engine) findNodeMutations(fileName string, set *token.FileSet, file *a
 }
 
 func checkRemoveStatement(node ast.Stmt) bool {
+	if isAridNode(node) {
+		return false
+	}
+
 	switch n := node.(type) {
 	case *ast.AssignStmt:
 		return n.Tok != token.DEFINE
 	case *ast.IncDecStmt:
 		return true
 	case *ast.ExprStmt:
-		return !isLoggerStmt(n)
+		return true
+	}
+
+	return false
+}
+
+func isAridNode(node ast.Node) bool {
+	if node == nil {
+		return true
+	}
+
+	// Base case
+	switch n := node.(type) {
+	case *ast.ExprStmt:
+		if isLoggerStmt(node) {
+			return true
+		}
+
+		return isAridNode(n.X)
+	case *ast.BlockStmt:
+		allChildrenArid := true
+		for _, s := range n.List {
+			if !isAridNode(s) {
+				allChildrenArid = false
+				break
+			}
+		}
+		return allChildrenArid
+	case *ast.IfStmt:
+		return isAridNode(n.Init) && isAridNode(n.Body) && isAridNode(n.Else)
+	case *ast.CallExpr:
+		return isAridNode(n.Fun)
+	case *ast.Ident:
+		if n.Obj == nil {
+			return true
+		}
+		if funDecl, ok := (n.Obj.Decl).(*ast.FuncDecl); ok {
+			return isAridNode(funDecl)
+		}
+	case *ast.FuncDecl:
+		return isAridNode(n.Body)
+	case *ast.CaseClause:
+		allChildrenArid := true
+		for _, s := range n.Body {
+			if !isAridNode(s) {
+				allChildrenArid = false
+				break
+			}
+		}
+		return allChildrenArid
 	}
 
 	return false
