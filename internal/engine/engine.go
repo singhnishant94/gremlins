@@ -162,26 +162,30 @@ func (mu *Engine) runOnFile(fileName string) {
 	_ = src.Close()
 
 	ast.Inspect(file, func(node ast.Node) bool {
+		if detectAridNodes && isAridNode(node) {
+			return false
+		}
+
 		n, ok := NewTokenNode(node)
 		if !ok {
 			return true
 		}
-		if detectAridNodes && isAridNode(node) {
-			return false
-		}
+
 		mu.findTokenMutations(fileName, set, file, n)
 
 		return true
 	})
 
 	ast.Inspect(file, func(node ast.Node) bool {
+		if detectAridNodes && isAridNode(node) {
+			return false
+		}
+
 		n, ok := NewNode(node)
 		if !ok {
 			return true
 		}
-		if detectAridNodes && isAridNode(node) {
-			return false
-		}
+
 		mu.findNodeMutations(fileName, set, file, n)
 
 		return true
