@@ -45,10 +45,11 @@ import (
 const detectAridNodes = true
 
 var loggerIdentifiers = map[string]bool{
-	"log":     true,
-	"fmt":     true,
-	"slogger": true,
-	"logger":  true,
+	"log":           true,
+	"fmt":           true,
+	"slogger":       true,
+	"logger":        true,
+	"serrormonitor": true,
 }
 
 // Engine is the "engine" that performs the mutation testing.
@@ -312,7 +313,7 @@ func isAridNode(node ast.Node) bool {
 		}
 		return allChildrenArid
 	case *ast.IfStmt:
-		return isAridNode(n.Init) && isAridNode(n.Body) && isAridNode(n.Else)
+		return isAridNode(n.Body) && isAridNode(n.Else)
 	case *ast.CallExpr:
 		return isAridNode(n.Fun)
 	case *ast.Ident:
