@@ -25,106 +25,108 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"syscall"
 
-	"github.com/singhnishant94/gremlins/internal/astutil"
 	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
-// StmtRemover is a mutator.Mutator of a ast.Node.
+// NodeMutator is a mutator.Mutator of a token.Token.
 //
 // Since the AST is shared among mutants, it is important to avoid that more
 // than one mutation is applied to the same file before writing it. For this
-// reason, StmtRemover contains a cache of locks, one for each file.
+// reason, NodeMutator contains a cache of locks, one for each file.
 // Every time a mutation is about to being applied, a lock is acquired for
 // the file it is operating on. Once the file is written and the token is
 // rolled back, the lock is released.
-// Keeping a lock per file instead of a lock per StmtRemover allows to apply
+// Keeping a lock per file instead of a lock per NodeMutator allows to apply
 // mutations on different files in parallel.
-type StmtRemover struct {
-	pkgName     string
-	fs          *token.FileSet
-	file        *ast.File
-	node        *Node
-	workDir     string
-	origFile    []byte
-	mutantType  mutator.Type
-	status      mutator.Status
-	idx         int
-	pos         token.Pos
-	diff        string
-	testExecErr error
+type NodeMutator struct {
+	pkg        string
+	fs         *token.FileSet
+	file       *ast.File
+	node       *ast.Node
+	workDir    string
+	origFile   []byte
+	status     mutator.Status
+	mutantType mutator.Type
+	mutation   mutator.Mutation
+	diff       string
 }
 
-// NewTokenMutant initialises a NodeMutator.
-func NewStmtRemover(
-	pkgName string,
-	set *token.FileSet,
-	file *ast.File,
-	node *Node,
-	stmtIdx int,
-	pos token.Pos,
-) *StmtRemover {
-	return &StmtRemover{
-		pkgName: pkgName,
-		fs:      set,
-		file:    file,
-		node:    node,
-		idx:     stmtIdx,
-		pos:     pos,
+// NewTokenMutant initialises a TokenMutator.
+func NewTokenMutant(pkg string, set *token.FileSet, file *ast.File, node *ast.Node) *NodeMutator {
+	return &NodeMutator{
+		pkg:  pkg,
+		fs:   set,
+		file: file,
+		node: node,
 	}
 }
 
 // Type returns the mutator.Type of the mutant.Mutator.
-func (m *StmtRemover) Type() mutator.Type {
+func (m *NodeMutator) Type() mutator.Type {
 	return m.mutantType
 }
 
 // SetType sets the mutator.Type of the mutant.Mutator.
-func (m *StmtRemover) SetType(t mutator.Type) {
-	m.mutantType = t
+func (m *NodeMutator) SetType(mt mutator.Type) {
+	m.mutantType = mt
+}
+
+func (m *NodeMutator) SetMutation(ms mutator.Mutation) {
+	m.mutation = ms
 }
 
 // Status returns the mutator.Status of the mutant.Mutator.
-func (m *StmtRemover) Status() mutator.Status {
+func (m *NodeMutator) Status() mutator.Status {
 	return m.status
 }
 
 // SetStatus sets the mutator.Status of the mutant.Mutator.
-func (m *StmtRemover) SetStatus(s mutator.Status) {
+func (m *NodeMutator) SetStatus(s mutator.Status) {
 	m.status = s
 }
 
-// Position returns the token.Position where the NodeMutator resides.
-func (m *StmtRemover) Position() token.Position {
-	return m.fs.Position(m.Pos())
+// Position returns the token.Position where the TokenMutator resides.
+func (m *NodeMutator) Position() token.Position {
+	return m.fs.Position(m.mutation.Pos)
 }
 
-// Pos returns the token.Pos where the NodeMutator resides.
-func (m *StmtRemover) Pos() token.Pos {
-	return m.pos
+// Pos returns the token.Pos where the TokenMutator resides.
+func (m *NodeMutator) Pos() token.Pos {
+	return m.mutation.Pos
 }
 
 // Diff returns the diff between the original and the mutation.
-func (m *StmtRemover) Diff() string {
+func (m *NodeMutator) Diff() string {
 	return m.diff
 }
 
 // SetDiff sets the diff between the original and the mutation.
-func (m *StmtRemover) SetDiff(d string) {
+func (m *NodeMutator) SetDiff(d string) {
 	m.diff = d
 }
 
 // Pkg returns the package name to which the mutant belongs.
-func (m *StmtRemover) Pkg() string {
-	return m.pkgName
+func (m *NodeMutator) Pkg() string {
+	return m.pkg
 }
 
-func (m *StmtRemover) Apply() error {
+// Apply saves the original token.Token of the mutator.Mutator and sets the
+// current token from the tokenMutations table.
+// Apply overwrites the source code file with the mutated one. It also
+// stores the original file in the TokenMutator in order to allow
+// Rollback to put it back later.
+//
+// Apply also puts back the original Token after the mutated file write.
+// This is done in order to facilitate the atomicity of the operation,
+// avoiding locking in a method and unlocking in another.
+func (m *NodeMutator) Apply() error {
 	fileLock(m.Position().Filename).Lock()
 	defer fileLock(m.Position().Filename).Unlock()
 
-	filename := filepath.Join(m.workDir, m.fs.Position((*m.node.node).Pos()).Filename)
+	filename := filepath.Join(m.workDir, m.Position().Filename)
 	var err error
 	m.origFile, err = os.ReadFile(filename)
 	if err != nil {
@@ -137,43 +139,14 @@ func (m *StmtRemover) Apply() error {
 		return err
 	}
 
-	// Statement block removal
-	var l []ast.Stmt
-
-	switch n := (*m.node.node).(type) {
-	case *ast.BlockStmt:
-		l = n.List
-	case *ast.CaseClause:
-		l = n.Body
-	}
-
-	var oldStmt ast.Stmt
-
-	for i := range l {
-		if i == m.idx {
-			m.pos = l[i].Pos()
-			oldStmt = l[i]
-			l[i] = astutil.CreateNoopOfStatement(oldStmt)
-			break
-		}
-	}
-
-	if oldStmt == nil {
-		fmt.Println("OldStmt is nil. Returning.")
-		return nil
-	}
+	m.mutation.Change()
 
 	if err = m.writeMutatedFile(filename); err != nil {
 		return err
 	}
 
-	// Rollback
-	for i := range l {
-		if i == m.idx {
-			l[i] = oldStmt
-			break
-		}
-	}
+	// Rollback here to facilitate the atomicity of the operation.
+	m.mutation.Reset()
 
 	m.SetDiff(m.calcDiff(copyOrigFileName, filename))
 
@@ -183,7 +156,7 @@ func (m *StmtRemover) Apply() error {
 	return nil
 }
 
-func (m *StmtRemover) writeMutatedFile(filename string) error {
+func (m *NodeMutator) writeMutatedFile(filename string) error {
 	w := &bytes.Buffer{}
 	err := printer.Fprint(w, m.fs, m.file)
 	if err != nil {
@@ -198,7 +171,7 @@ func (m *StmtRemover) writeMutatedFile(filename string) error {
 	return nil
 }
 
-func (m *StmtRemover) calcDiff(origFile, mutationFile string) string {
+func (m *NodeMutator) calcDiff(origFile, mutationFile string) string {
 	diff, err := exec.Command("diff", "--label=Original", "--label=New", "-u", origFile, mutationFile).CombinedOutput()
 	var execExitCode int
 	if err == nil {
@@ -217,38 +190,60 @@ func (m *StmtRemover) calcDiff(origFile, mutationFile string) string {
 	return string(diff)
 }
 
+var locks = make(map[string]*sync.Mutex)
+var mutex sync.RWMutex
+
+func fileLock(filename string) *sync.Mutex {
+	lock, ok := cachedLock(filename)
+	if !ok {
+		mutex.Lock()
+		defer mutex.Unlock()
+		lock, ok = locks[filename]
+		if !ok {
+			lock = &sync.Mutex{}
+			locks[filename] = lock
+
+			return lock
+		}
+
+		return lock
+	}
+
+	return lock
+}
+
+func cachedLock(filename string) (*sync.Mutex, bool) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	lock, ok := locks[filename]
+
+	return lock, ok
+}
+
 // Rollback puts back the original file after the test and cleans up the
-// NodeMutator to free memory.
-func (m *StmtRemover) Rollback() error {
+// TokenMutator to free memory.
+func (m *NodeMutator) Rollback() error {
 	defer m.resetOrigFile()
 	filename := filepath.Join(m.workDir, m.Position().Filename)
 
 	return os.WriteFile(filename, m.origFile, 0600)
 }
 
-func (m *StmtRemover) SetTestExecutionError(err error) {
-	m.testExecErr = err
-}
-
-func (m *StmtRemover) TestExecutionError() error {
-	return m.testExecErr
-}
-
 // SetWorkdir sets the base path on which to Apply and Rollback operations.
 //
-// By default, NodeMutator will operate on the same source on which the analysis
+// By default, TokenMutator will operate on the same source on which the analysis
 // was performed. Changing the workdir will prevent the modifications of the
 // original files.
-func (m *StmtRemover) SetWorkdir(path string) {
+func (m *NodeMutator) SetWorkdir(path string) {
 	m.workDir = path
 }
 
 // Workdir returns the current working dir in which the Mutator will apply its mutations.
-func (m *StmtRemover) Workdir() string {
+func (m *NodeMutator) Workdir() string {
 	return m.workDir
 }
 
-func (m *StmtRemover) resetOrigFile() {
+func (m *NodeMutator) resetOrigFile() {
 	var zeroByte []byte
 	m.origFile = zeroByte
 }

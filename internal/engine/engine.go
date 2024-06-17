@@ -31,6 +31,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/singhnishant94/gremlins/internal/astutil"
 	"github.com/singhnishant94/gremlins/internal/coverage"
 	"github.com/singhnishant94/gremlins/internal/diff"
 	"github.com/singhnishant94/gremlins/internal/engine/workerpool"
@@ -43,14 +44,6 @@ import (
 )
 
 const detectAridNodes = true
-
-var loggerIdentifiers = map[string]bool{
-	"log":           true,
-	"fmt":           true,
-	"slogger":       true,
-	"logger":        true,
-	"serrormonitor": true,
-}
 
 // Engine is the "engine" that performs the mutation testing.
 //
@@ -162,54 +155,44 @@ func (mu *Engine) runOnFile(fileName string) {
 	_ = src.Close()
 
 	ast.Inspect(file, func(node ast.Node) bool {
-		if detectAridNodes && isAridNode(node) {
+		if node != nil {
+			position := set.Position(node.Pos())
+			if position.Filename == "src/infrastructure/util/util.go" {
+				if _, ok := node.(*ast.IncDecStmt); ok {
+					fmt.Printf("IncDecStmt detected: %+v at %+v\n", node, position)
+				}
+			}
+		}
+		if detectAridNodes && astutil.IsAridNode(node) {
 			return false
 		}
 
-		n, ok := NewTokenNode(node)
-		if !ok {
-			return true
-		}
-
-		mu.findTokenMutations(fileName, set, file, n)
-
-		return true
-	})
-
-	ast.Inspect(file, func(node ast.Node) bool {
-		if detectAridNodes && isAridNode(node) {
-			return false
-		}
-
-		n, ok := NewNode(node)
-		if !ok {
-			return true
-		}
-
-		mu.findNodeMutations(fileName, set, file, n)
+		mu.findMutations(fileName, set, file, &node)
 
 		return true
 	})
 }
 
-func (mu *Engine) findTokenMutations(fileName string, set *token.FileSet, file *ast.File, node *NodeToken) {
-	mutantTypes, ok := TokenMutantType[node.Tok()]
-	if !ok {
-		return
-	}
+func (mu *Engine) findMutations(fileName string, set *token.FileSet, file *ast.File, node *ast.Node) {
+	mutantTypes := GetMutantTypes(*node)
 
 	pkg := mu.pkgName(fileName, file.Name.Name)
 	for _, mt := range mutantTypes {
+		// Testing only for condition negation as of now
 		if !configuration.Get[bool](configuration.MutantTypeEnabledKey(mt)) {
 			continue
 		}
-		mutantType := mt
-		tm := NewTokenMutant(pkg, set, file, node)
-		tm.SetType(mutantType)
-		tm.SetStatus(mu.mutationStatus(set.Position(node.TokPos)))
+		mutations := mutator.GetMutations(mt.String())(*node)
+		for _, mut := range mutations {
+			tm := NewTokenMutant(pkg, set, file, node)
+			tm.SetType(mt)
+			tm.SetMutation(mut)
+			tm.SetStatus(mu.mutationStatus(set.Position(mut.Pos)))
 
-		mu.mutants = append(mu.mutants, tm)
-		// mu.mutantStream <- tm
+			mu.mutants = append(mu.mutants, tm)
+			// mu.mutantStream <- tm
+		}
+
 	}
 }
 
@@ -253,119 +236,6 @@ func (mu *Engine) mutationStatus(pos token.Position) mutator.Status {
 	}
 
 	return status
-}
-
-func (mu *Engine) findNodeMutations(fileName string, set *token.FileSet, file *ast.File, node *Node) {
-	// Statement block removal
-	var l []ast.Stmt
-
-	switch n := (*node.node).(type) {
-	case *ast.BlockStmt:
-		l = n.List
-	case *ast.CaseClause:
-		l = n.Body
-	}
-
-	for i, ni := range l {
-		if checkRemoveStatement(ni) {
-			tm := NewStmtRemover(mu.pkgName(fileName, file.Name.Name), set, file, node, i, ni.Pos())
-			tm.SetType(mutator.RemoveStatement)
-			tm.SetStatus(mu.mutationStatus(set.Position(tm.Pos())))
-
-			mu.mutants = append(mu.mutants, tm)
-		}
-	}
-}
-
-func checkRemoveStatement(node ast.Stmt) bool {
-	if isAridNode(node) {
-		return false
-	}
-
-	switch n := node.(type) {
-	case *ast.AssignStmt:
-		return n.Tok != token.DEFINE
-	case *ast.IncDecStmt:
-		return true
-	case *ast.ExprStmt:
-		return true
-	}
-
-	return false
-}
-
-func isAridNode(node ast.Node) bool {
-	if node == nil {
-		return true
-	}
-
-	// Base case
-	switch n := node.(type) {
-	case *ast.ExprStmt:
-		if isLoggerStmt(node) {
-			return true
-		}
-
-		return isAridNode(n.X)
-	case *ast.BlockStmt:
-		allChildrenArid := true
-		for _, s := range n.List {
-			if !isAridNode(s) {
-				allChildrenArid = false
-				break
-			}
-		}
-		return allChildrenArid
-	case *ast.IfStmt:
-		return isAridNode(n.Body) && isAridNode(n.Else)
-	case *ast.CallExpr:
-		return isAridNode(n.Fun)
-	case *ast.Ident:
-		if n.Obj == nil {
-			return true
-		}
-		if funDecl, ok := (n.Obj.Decl).(*ast.FuncDecl); ok {
-			return isAridNode(funDecl)
-		}
-	case *ast.FuncDecl:
-		return isAridNode(n.Body)
-	case *ast.CaseClause:
-		allChildrenArid := true
-		for _, s := range n.Body {
-			if !isAridNode(s) {
-				allChildrenArid = false
-				break
-			}
-		}
-		return allChildrenArid
-	}
-
-	return false
-}
-
-func isLoggerStmt(es ast.Node) bool {
-	firstIdent := ""
-	ast.Inspect(es, func(n ast.Node) bool {
-		if ident, ok := n.(*ast.Ident); ok {
-			// Since it's a depth first traversal, first identifier should be
-			// one of loggerIdentifiers for the statement to be a logger stmt.
-			if firstIdent != "" {
-				// If we've already found our candidate don't recurse further
-				return false
-			}
-			firstIdent = ident.Name
-			return false
-		}
-
-		if firstIdent != "" {
-			return false
-		}
-		return true
-	})
-
-	_, found := loggerIdentifiers[firstIdent]
-
-	return found
 }
 
 func (mu *Engine) executeTests(ctx context.Context) report.Results {

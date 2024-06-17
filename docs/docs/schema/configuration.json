@@ -141,20 +141,6 @@
             }
           }
         },
-        "invert-negatives": {
-          "title": "The invert-negatives Schema",
-          "type": "object",
-          "required": [
-            "enabled"
-          ],
-          "properties": {
-            "enabled": {
-              "title": "The enabled Schema",
-              "type": "boolean",
-              "default": true
-            }
-          }
-        },
         "invert-loopctrl": {
           "title": "The invert-loopctrl Schema",
           "type": "object",
@@ -225,8 +211,8 @@
             }
           }
         },
-        "remove-binary-expression-left": {
-          "title": "The remove-binary-expression-left Schema",
+        "remove-binary-expression": {
+          "title": "The remove-binary-expression Schema",
           "type": "object",
           "required": [
             "enabled"
@@ -239,8 +225,8 @@
             }
           }
         },
-        "remove-binary-expression-right": {
-          "title": "The remove-binary-expression-right Schema",
+        "remove-statement": {
+          "title": "The remove-statement Schema",
           "type": "object",
           "required": [
             "enabled"

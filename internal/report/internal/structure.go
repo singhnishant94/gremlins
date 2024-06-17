@@ -47,18 +47,16 @@ type Mutation struct {
 
 // MutatorType contains the list of all supported mutator types.
 type MutatorType struct {
-	ArithmeticBase              int `json:"arithmetic_base,omitempty"`
-	ConditionalsNegation        int `json:"conditionals_negation,omitempty"`
-	ConditionalsBoundary        int `json:"conditionals_boundary,omitempty"`
-	IncrementDecrement          int `json:"increment_decrement,omitempty"`
-	InvertAssignments           int `json:"invert_assignments,omitempty"`
-	InvertBitwise               int `json:"invert_bitwise,omitempty"`
-	InvertBitwiseAssignments    int `json:"invert_bitwise_assignments,omitempty"`
-	InvertLogical               int `json:"invert_logical,omitempty"`
-	InvertLoopCtrl              int `json:"invert_loop_ctrl,omitempty"`
-	InvertNegatives             int `json:"invert_negatives,omitempty"`
-	RemoveSelfAssignments       int `json:"remove_self_assignments,omitempty"`
-	RemoveBinaryExpressionLeft  int `json:"remove_binary_expression_left,omitempty"`
-	RemoveBinaryExpressionRight int `json:"remove_binary_expression_right,omitempty"`
-	RemoveStatement             int `json:"remove_statement"`
+	ArithmeticBase           int `json:"arithmetic_base,omitempty"`
+	ConditionalsNegation     int `json:"conditionals_negation,omitempty"`
+	ConditionalsBoundary     int `json:"conditionals_boundary,omitempty"`
+	IncrementDecrement       int `json:"increment_decrement,omitempty"`
+	InvertAssignments        int `json:"invert_assignments,omitempty"`
+	InvertBitwise            int `json:"invert_bitwise,omitempty"`
+	InvertBitwiseAssignments int `json:"invert_bitwise_assignments,omitempty"`
+	InvertLogical            int `json:"invert_logical,omitempty"`
+	InvertLoopCtrl           int `json:"invert_loop_ctrl,omitempty"`
+	RemoveSelfAssignments    int `json:"remove_self_assignments,omitempty"`
+	RemoveBinaryExpression   int `json:"remove_binary_expression,omitempty"`
+	RemoveStatement          int `json:"remove_statement"`
 }

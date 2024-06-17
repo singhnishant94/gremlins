@@ -17,14 +17,15 @@
 package engine
 
 import (
+	"go/ast"
 	"go/token"
 
 	"github.com/singhnishant94/gremlins/internal/mutator"
 )
 
-// TokenMutantType is the mapping from each token.Token and all the
+// tokenMutantType is the mapping from each token.Token and all the
 // mutator.Type that can be applied to it.
-var TokenMutantType = map[token.Token][]mutator.Type{
+var tokenMutantType = map[token.Token][]mutator.Type{
 	token.ADD:            {mutator.ArithmeticBase},
 	token.ADD_ASSIGN:     {mutator.InvertAssignments, mutator.RemoveSelfAssignments},
 	token.AND:            {mutator.InvertBitwise},
@@ -38,9 +39,9 @@ var TokenMutantType = map[token.Token][]mutator.Type{
 	token.GEQ:            {mutator.ConditionalsBoundary, mutator.ConditionalsNegation},
 	token.GTR:            {mutator.ConditionalsBoundary, mutator.ConditionalsNegation},
 	token.INC:            {mutator.IncrementDecrement},
-	token.LAND:           {mutator.InvertLogical, mutator.RemoveBinaryExpressionLeft, mutator.RemoveBinaryExpressionRight},
+	token.LAND:           {mutator.InvertLogical, mutator.RemoveBinaryExpression},
 	token.LEQ:            {mutator.ConditionalsBoundary, mutator.ConditionalsNegation},
-	token.LOR:            {mutator.InvertLogical, mutator.RemoveBinaryExpressionLeft, mutator.RemoveBinaryExpressionRight},
+	token.LOR:            {mutator.InvertLogical, mutator.RemoveBinaryExpression},
 	token.LSS:            {mutator.ConditionalsBoundary, mutator.ConditionalsNegation},
 	token.MUL:            {mutator.ArithmeticBase},
 	token.MUL_ASSIGN:     {mutator.InvertAssignments, mutator.RemoveSelfAssignments},
@@ -55,83 +56,29 @@ var TokenMutantType = map[token.Token][]mutator.Type{
 	token.SHL_ASSIGN:     {mutator.RemoveSelfAssignments, mutator.InvertBitwiseAssignments},
 	token.SHR:            {mutator.InvertBitwise},
 	token.SHR_ASSIGN:     {mutator.RemoveSelfAssignments, mutator.InvertBitwiseAssignments},
-	token.SUB:            {mutator.InvertNegatives, mutator.ArithmeticBase},
+	token.SUB:            {mutator.ArithmeticBase},
 	token.SUB_ASSIGN:     {mutator.InvertAssignments, mutator.RemoveSelfAssignments},
 	token.XOR:            {mutator.InvertBitwise},
 	token.XOR_ASSIGN:     {mutator.RemoveSelfAssignments, mutator.InvertBitwiseAssignments},
 }
 
-var tokenMutations = map[mutator.Type]map[token.Token]token.Token{
-	mutator.ArithmeticBase: {
-		token.ADD: token.SUB,
-		token.MUL: token.QUO,
-		token.QUO: token.MUL,
-		token.REM: token.MUL,
-		token.SUB: token.ADD,
-	},
-	mutator.ConditionalsBoundary: {
-		token.GEQ: token.GTR,
-		token.GTR: token.GEQ,
-		token.LEQ: token.LSS,
-		token.LSS: token.LEQ,
-	},
-	mutator.ConditionalsNegation: {
-		token.EQL: token.NEQ,
-		token.GEQ: token.LSS,
-		token.GTR: token.LEQ,
-		token.LEQ: token.GTR,
-		token.LSS: token.GEQ,
-		token.NEQ: token.EQL,
-	},
-	mutator.IncrementDecrement: {
-		token.DEC: token.INC,
-		token.INC: token.DEC,
-	},
-	mutator.InvertAssignments: {
-		token.ADD_ASSIGN: token.SUB_ASSIGN,
-		token.MUL_ASSIGN: token.QUO_ASSIGN,
-		token.QUO_ASSIGN: token.MUL_ASSIGN,
-		token.REM_ASSIGN: token.REM_ASSIGN,
-		token.SUB_ASSIGN: token.ADD_ASSIGN,
-	},
-	mutator.InvertBitwise: {
-		token.AND:     token.OR,
-		token.OR:      token.AND,
-		token.XOR:     token.AND,
-		token.AND_NOT: token.AND,
-		token.SHL:     token.SHR,
-		token.SHR:     token.SHL,
-	},
-	mutator.InvertBitwiseAssignments: {
-		token.AND_ASSIGN:     token.OR_ASSIGN,
-		token.OR_ASSIGN:      token.AND_ASSIGN,
-		token.XOR_ASSIGN:     token.AND_ASSIGN,
-		token.AND_NOT_ASSIGN: token.AND_ASSIGN,
-		token.SHL_ASSIGN:     token.SHR_ASSIGN,
-		token.SHR_ASSIGN:     token.SHL_ASSIGN,
-	},
-	mutator.InvertLogical: {
-		token.LAND: token.LOR,
-		token.LOR:  token.LAND,
-	},
-	mutator.InvertLoopCtrl: {
-		token.BREAK:    token.CONTINUE,
-		token.CONTINUE: token.BREAK,
-	},
-	mutator.InvertNegatives: {
-		token.SUB: token.ADD,
-	},
-	mutator.RemoveSelfAssignments: {
-		token.ADD_ASSIGN:     token.ASSIGN,
-		token.AND_ASSIGN:     token.ASSIGN,
-		token.AND_NOT_ASSIGN: token.ASSIGN,
-		token.MUL_ASSIGN:     token.ASSIGN,
-		token.OR_ASSIGN:      token.ASSIGN,
-		token.QUO_ASSIGN:     token.ASSIGN,
-		token.REM_ASSIGN:     token.ASSIGN,
-		token.SHL_ASSIGN:     token.ASSIGN,
-		token.SHR_ASSIGN:     token.ASSIGN,
-		token.SUB_ASSIGN:     token.ASSIGN,
-		token.XOR_ASSIGN:     token.ASSIGN,
-	},
+func GetMutantTypes(node ast.Node) []mutator.Type {
+	mutatorTypes := []mutator.Type{}
+	switch n := node.(type) {
+	case *ast.AssignStmt:
+		mutatorTypes = append(mutatorTypes, tokenMutantType[n.Tok]...)
+	case *ast.BinaryExpr:
+		mutatorTypes = append(mutatorTypes, tokenMutantType[n.Op]...)
+	case *ast.BranchStmt:
+		mutatorTypes = append(mutatorTypes, tokenMutantType[n.Tok]...)
+	case *ast.IncDecStmt:
+		mutatorTypes = append(mutatorTypes, tokenMutantType[n.Tok]...)
+	case *ast.UnaryExpr:
+		mutatorTypes = append(mutatorTypes, tokenMutantType[n.Op]...)
+	case *ast.BlockStmt:
+		mutatorTypes = append(mutatorTypes, mutator.RemoveStatement)
+	case *ast.CaseClause:
+		mutatorTypes = append(mutatorTypes, mutator.RemoveStatement)
+	}
+	return mutatorTypes
 }

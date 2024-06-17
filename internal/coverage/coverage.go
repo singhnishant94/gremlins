@@ -109,6 +109,8 @@ func (c *Coverage) Run() (Result, error) {
 		return Result{}, fmt.Errorf("an error occurred while generating coverage profile: %w", err)
 	}
 
+	fmt.Printf("Coverage data\n%+v", profile["src/common/util/util.go"])
+
 	return Result{Profile: profile, Elapsed: elapsed}, nil
 }
 

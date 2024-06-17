@@ -34,6 +34,11 @@ import (
 	"github.com/singhnishant94/gremlins/internal/exclusion"
 	"github.com/singhnishant94/gremlins/internal/log"
 	"github.com/singhnishant94/gremlins/internal/mutator"
+	_ "github.com/singhnishant94/gremlins/internal/mutator/arithmetic"
+	_ "github.com/singhnishant94/gremlins/internal/mutator/conditional"
+	_ "github.com/singhnishant94/gremlins/internal/mutator/incrementdecrement"
+	_ "github.com/singhnishant94/gremlins/internal/mutator/loop"
+	_ "github.com/singhnishant94/gremlins/internal/mutator/statement"
 	"github.com/singhnishant94/gremlins/internal/report"
 
 	"github.com/singhnishant94/gremlins/cmd/internal/flags"

@@ -142,8 +142,6 @@ func reportMutatorType(m mutator.Mutator, rep *reportStatus) {
 		rep.mutatorStatistics.InvertLogical++
 	case mutator.InvertLoopCtrl:
 		rep.mutatorStatistics.InvertLoopCtrl++
-	case mutator.InvertNegatives:
-		rep.mutatorStatistics.InvertNegatives++
 	case mutator.RemoveSelfAssignments:
 		rep.mutatorStatistics.RemoveSelfAssignments++
 	}

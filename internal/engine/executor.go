@@ -205,8 +205,6 @@ func (m *mutantExecutor) runTests(rootDir, pkg string) mutator.Status {
 	rel, err := run(cmd)
 	defer rel()
 
-	m.mutant.SetTestExecutionError(err)
-
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		return mutator.TimedOut
 	}

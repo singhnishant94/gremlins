@@ -16,7 +16,11 @@
 
 package mutator
 
-import "go/token"
+import (
+	"fmt"
+	"go/ast"
+	"go/token"
+)
 
 // Status represents the status of a given TokenMutant.
 //
@@ -81,10 +85,8 @@ const (
 	InvertBitwiseAssignments
 	InvertLogical
 	InvertLoopCtrl
-	InvertNegatives
 	RemoveSelfAssignments
-	RemoveBinaryExpressionLeft
-	RemoveBinaryExpressionRight
+	RemoveBinaryExpression
 	RemoveStatement
 )
 
@@ -99,10 +101,8 @@ var Types = []Type{
 	IncrementDecrement,
 	InvertLogical,
 	InvertLoopCtrl,
-	InvertNegatives,
 	RemoveSelfAssignments,
-	RemoveBinaryExpressionLeft,
-	RemoveBinaryExpressionRight,
+	RemoveBinaryExpression,
 	RemoveStatement,
 }
 
@@ -116,8 +116,6 @@ func (mt Type) String() string {
 		return "INCREMENT_DECREMENT"
 	case InvertLogical:
 		return "INVERT_LOGICAL"
-	case InvertNegatives:
-		return "INVERT_NEGATIVES"
 	case ArithmeticBase:
 		return "ARITHMETIC_BASE"
 	case InvertLoopCtrl:
@@ -130,10 +128,8 @@ func (mt Type) String() string {
 		return "INVERT_BWASSIGN"
 	case RemoveSelfAssignments:
 		return "REMOVE_SELF_ASSIGNMENTS"
-	case RemoveBinaryExpressionLeft:
-		return "REMOVE_BINARY_EXPRESSION_LEFT"
-	case RemoveBinaryExpressionRight:
-		return "REMOVE_BINARY_EXPRESSION_RIGHT"
+	case RemoveBinaryExpression:
+		return "REMOVE_BINARY_EXPRESSION"
 	case RemoveStatement:
 		return "REMOVE_STATEMENT"
 
@@ -186,10 +182,31 @@ type Mutator interface {
 	// Rollback removes the mutation from the source code and sets it back to
 	// its original status.
 	Rollback() error
+}
 
-	// Set test execution error
-	SetTestExecutionError(error)
+// MutatorFunc defines a mutator for mutation testing by returning a list of possible mutations for the given node.
+type MutatorFunc func(node ast.Node) []Mutation
 
-	// Test execution error
-	TestExecutionError() error
+var mutatorLookup = make(map[string]MutatorFunc)
+
+// Register registers a mutator instance function with the given name.
+func Register(name string, mutator MutatorFunc) {
+	if mutator == nil {
+		panic("mutator function is nil")
+	}
+
+	if _, ok := mutatorLookup[name]; ok {
+		panic(fmt.Sprintf("mutator %q already registered", name))
+	}
+
+	mutatorLookup[name] = mutator
+}
+
+func GetMutations(name string) MutatorFunc {
+	fn, ok := mutatorLookup[name]
+	if !ok {
+		panic(fmt.Sprintf("Mutation %s not registered", name))
+	}
+
+	return fn
 }
